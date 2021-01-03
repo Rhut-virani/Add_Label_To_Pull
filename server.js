@@ -19,11 +19,11 @@ app.use(express.json());
 app.use(passport.initialize());
 app.use(passport.session());
 
-passport.serializeUser(function (user, done) {
+passport.serializeUser((user, done) => {
 	done(null, user);
 });
 
-passport.deserializeUser(function (user, done) {
+passport.deserializeUser((user, done) => {
 	done(null, user);
 });
 
@@ -34,7 +34,7 @@ passport.use(
 			clientSecret: process.env.APP_CLIENT_SECRET,
 			callbackURL: process.env.CALLBACK_URL,
 		},
-		function (accessToken, refreshToken, profile, done) {
+		(accessToken, refreshToken, profile, done) => {
 			return done(null, profile);
 		}
 	)
@@ -49,25 +49,25 @@ const pem = fs.readFileSync(
 
 //------------Routes
 
-app.get("/", function (req, res) {
+app.get("/", (req, res) => {
 	res.send("home");
 });
 
-app.get("/auth/github", passport.authenticate("github"), function (req, res) {
+app.get("/auth/github", passport.authenticate("github"), (req, res) => {
 	res.redirect("/");
 });
 
 app.get(
 	"/auth/github/callback",
 	passport.authenticate("github", { failureRedirect: "/" }),
-	function (req, res) {
+	(req, res) => {
 		res.redirect("/");
 	}
 );
 
 //-----------Payload route for webhook to review when a pull request is generated
 
-app.post("/payload", async function (req, res) {
+app.post("/payload", async (req, res) => {
 	const title = req.body.pull_request.title.toLowerCase();
 	const owner = req.body.pull_request.head.repo.owner.login;
 	const repo = req.body.pull_request.head.repo.name;
@@ -83,7 +83,7 @@ app.post("/payload", async function (req, res) {
 		clientSecret: process.env.APP_CLIENT_SECRET,
 	});
 	const appAuthentication = await auth({ type: "installation" });
-	let token = appAuthentication.token;
+	const token = appAuthentication.token;
 
 	//------------Authenticating Ocktokit
 	const octokit = new Octokit({
@@ -103,12 +103,11 @@ app.post("/payload", async function (req, res) {
 	res.sendStatus(200);
 });
 
-app.get("/logout", function (req, res) {
+app.get("/logout", (req, res) => {
 	req.logout();
 	res.sendStatus(200);
 });
 
-
-app.listen(3000, function () {
+app.listen(3000, () => {
 	console.log("App listening at port: 3000");
 });

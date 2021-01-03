@@ -1,4 +1,4 @@
-# Add_Lable_To_Pul
+# Add_Lable_To_Pull
  
 Github App that adds a specific Lable to the Pull Request when the app is installed to the specific Repository.
 
